@@ -1,1 +1,169 @@
-HELLO WORLD TEST
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz · As 5 Linguagens do Amor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,700;1,500&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --berry:#6D2E46; --deep:#55243A; --rose:#A26769;
+    --blush:#F1E4E6; --ink:#473640; --muted:#8C7A82; --white:#FFFFFF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:"Karla",sans-serif; color:var(--ink);
+    background:linear-gradient(160deg,var(--deep) 0%, var(--berry) 55%, #7d3a52 100%);
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px;
+  }
+  .card{background:var(--white); width:100%; max-width:540px; border-radius:22px; box-shadow:0 18px 50px rgba(40,12,25,.35); overflow:hidden;}
+  .inner{padding:30px 26px 28px}
+  .header{text-align:center; margin-bottom:18px}
+  .brand{font-size:.68rem; letter-spacing:.18em; text-transform:uppercase; color:var(--rose); margin-bottom:8px}
+  .hearts{font-size:1.4rem; margin-bottom:4px}
+  .progress-bar{height:4px; background:var(--blush); border-radius:2px; margin-bottom:6px; overflow:hidden}
+  .progress-fill{height:100%; background:linear-gradient(90deg,var(--rose),var(--berry)); border-radius:2px; transition:width .4s ease}
+  .count{text-align:right; font-size:.72rem; color:var(--muted); margin-bottom:20px}
+  .question{font-family:"Fraunces",serif; font-size:1.3rem; font-weight:700; color:var(--deep); text-align:center; line-height:1.3; margin-bottom:6px}
+  .sub{text-align:center; font-size:.82rem; color:var(--muted); margin-bottom:22px}
+  .options{display:flex; flex-direction:column; gap:10px}
+  .option{background:var(--blush); border:2px solid transparent; border-radius:14px; padding:14px 18px; font-size:.9rem; color:var(--ink); cursor:pointer; transition:all .2s; text-align:left; font-family:inherit; line-height:1.4;}
+  .option:hover{border-color:var(--rose); background:#eedde0}
+  .option.selected{border-color:var(--berry); background:#e8d0d5}
+  .nav{display:flex; justify-content:flex-end; margin-top:20px}
+  .btn{background:var(--berry); color:#fff; border:none; border-radius:12px; padding:12px 28px; font-size:.88rem; font-weight:700; cursor:pointer; font-family:inherit; transition:background .2s;}
+  .btn:hover{background:var(--deep)}
+  .btn:disabled{opacity:.4; cursor:not-allowed}
+  .result-hidden{display:none}
+  .result{text-align:center}
+  .result-emoji{font-size:2.5rem; margin-bottom:8px}
+  .result-title{font-family:"Fraunces",serif; font-size:1.5rem; font-weight:700; color:var(--deep); margin-bottom:4px}
+  .result-subtitle{font-size:.82rem; color:var(--muted); margin-bottom:16px}
+  .language-card{background:linear-gradient(135deg,var(--berry),var(--rose)); border-radius:16px; padding:20px; color:#fff; margin-bottom:16px;}
+  .language-name{font-family:"Fraunces",serif; font-size:1.6rem; font-weight:700; margin-bottom:6px}
+  .language-desc{font-size:.85rem; opacity:.9; line-height:1.5; margin-bottom:14px}
+  .tip-box{background:rgba(255,255,255,.2); border-radius:10px; padding:12px 14px; font-size:.82rem; line-height:1.5}
+  .tip-label{font-weight:700; margin-bottom:4px; font-size:.75rem; letter-spacing:.08em; text-transform:uppercase; opacity:.85}
+  .bars{margin-bottom:18px}
+  .bar-row{display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:.78rem}
+  .bar-label{width:120px; text-align:right; color:var(--muted); flex-shrink:0}
+  .bar-track{flex:1; height:8px; background:var(--blush); border-radius:4px; overflow:hidden}
+  .bar-fill{height:100%; background:linear-gradient(90deg,var(--rose),var(--berry)); border-radius:4px; transition:width 1s ease}
+  .bar-val{width:28px; text-align:left; color:var(--muted); font-weight:700}
+  .share-btn{width:100%; background:var(--berry); color:#fff; border:none; border-radius:14px; padding:14px; font-size:.92rem; font-weight:700; cursor:pointer; font-family:inherit; transition:background .2s; margin-bottom:10px;}
+  .share-btn:hover{background:var(--deep)}
+  .restart-btn{width:100%; background:transparent; color:var(--muted); border:2px solid var(--blush); border-radius:14px; padding:11px; font-size:.85rem; font-weight:600; cursor:pointer; font-family:inherit; transition:all .2s;}
+  .restart-btn:hover{border-color:var(--rose); color:var(--rose)}
+  .footer{text-align:center; font-size:.7rem; color:var(--muted); margin-top:14px; line-height:1.6}
+  .footer strong{color:var(--rose)}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="inner">
+    <div id="quiz-section">
+      <div class="header">
+        <div class="hearts">🤍🩷</div>
+        <div class="brand">As 5 Linguagens do Amor</div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+      <div class="count" id="count">1 / 10</div>
+      <div class="question" id="question"></div>
+      <div class="sub">Toque na opção que mais fala ao seu coração:</div>
+      <div class="options" id="options"></div>
+      <div class="nav"><button class="btn" id="next-btn" disabled>Próxima →</button></div>
+    </div>
+    <div id="result-section" class="result-hidden">
+      <div class="result">
+        <div class="result-emoji" id="r-emoji"></div>
+        <div class="result-title">Sua linguagem é:</div>
+        <div class="result-subtitle">Sua linguagem do amor principal</div>
+        <div class="language-card">
+          <div class="language-name" id="r-name"></div>
+          <div class="language-desc" id="r-desc"></div>
+          <div class="tip-box">
+            <div class="tip-label">💌 Dica para meu cônjuge</div>
+            <div id="r-tip"></div>
+          </div>
+        </div>
+        <div class="bars" id="bars"></div>
+        <button class="share-btn" id="share-btn">💬 Compartilhar no WhatsApp</button>
+        <button class="restart-btn" id="restart-btn">↺ Refazer o quiz</button>
+        <div class="footer"><strong>"O amor é paciente e bondoso"</strong><br>1 Coríntios 13:4 · Quiz das 5 Linguagens do Amor</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const questions=[
+  {q:"É mais significativo para mim...",a:[{t:"Receber um elogio sincero do meu cônjuge.",l:0},{t:"Ter um tempo só nosso, sem interrupções.",l:1}]},
+  {q:"Quando meu parceiro(a) cuida de algo que me preocupava sem eu pedir, eu me sinto...",a:[{t:"Muito amado(a) — atos falam mais que palavras.",l:4},{t:"Feliz, mas preferia que ele/ela tivesse me dito algo carinhoso.",l:0}]},
+  {q:"Numa semana difícil, o que mais me confortaria?",a:[{t:"Um abraço longo ou segurar as mãos.",l:2},{t:"Ouvi-lo(a) dizer: 'Estou aqui por você, te amo.'",l:0}]},
+  {q:"Sinto que somos mais próximos quando...",a:[{t:"Fazemos algo juntos que os dois gostam.",l:1},{t:"Ele/ela me surpreende com um presente especial.",l:3}]},
+  {q:"O que mais me magoa é quando...",a:[{t:"Meu cônjuge não nota meus esforços pela família.",l:4},{t:"Passamos muito tempo sem nos tocar (abraço, beijo, carinho).",l:2}]},
+  {q:"Fico mais animado(a) quando...",a:[{t:"Recebo uma mensagem de 'te amo' ou um bilhete escrito.",l:0},{t:"Ganhamos um tempo de qualidade sem distrações.",l:1}]},
+  {q:"Um presente para mim tem mais valor se...",a:[{t:"Vem acompanhado de palavras que mostram o quanto ele(a) pensou em mim.",l:3},{t:"Ele(a) cuida da casa ou dos filhos sem que eu peça.",l:4}]},
+  {q:"Em um momento romântico, prefiro...",a:[{t:"Estar de mãos dadas ou abraçados.",l:2},{t:"Receber palavras que me fazem sentir especial.",l:0}]},
+  {q:"O que me diz 'você é amado(a)'?",a:[{t:"Uma surpresa pensada especialmente para mim.",l:3},{t:"Fazer coisas juntos, mesmo que simples.",l:1}]},
+  {q:"Quando estou em baixo, me sinto melhor com...",a:[{t:"Um abraço ou toque suave de conforto.",l:2},{t:"Ver que meu cônjuge tomou iniciativa de resolver algo para me ajudar.",l:4}]}
+];
+const langs=[
+  {id:0,name:"Palavras de Afirmação",emoji:"💬",desc:"Você se sente amado(a) quando recebe elogios sinceros, palavras de encorajamento e expressões verbais de carinho.",tip:"Diga-me que me ama todos os dias. Deixe bilhetinhos, mande mensagens carinhosas. Suas palavras têm um poder imenso sobre mim."},
+  {id:1,name:"Tempo de Qualidade",emoji:"⏳",desc:"O que mais importa para você é a presença plena do seu parceiro. Atividades juntos e momentos compartilhados são a forma mais profunda de amor.",tip:"Reserve um tempo só nosso, sem celular ou TV. Me olhe nos olhos, me ouça de verdade. Sua presença é o meu maior presente."},
+  {id:2,name:"Toque Físico",emoji:"🤗",desc:"O contato físico — abraços, beijos, segurar as mãos — é a sua forma primária de conexão e segurança.",tip:"Me abrace com frequência, segure minha mão, me beije ao chegar e sair. O toque físico me diz que estou seguro(a) e amado(a)."},
+  {id:3,name:"Presentes",emoji:"🎁",desc:"Não é sobre materialismo — é sobre o simbolismo por trás do gesto. Quando seu cônjuge pensa em você e traz algo especial, isso demonstra amor.",tip:"Me surpreenda de vez em quando com pequenos presentes ou gestos. Não precisa ser caro — o que importa é que você pensou em mim."},
+  {id:4,name:"Atos de Serviço",emoji:"🤝",desc:"Quando seu parceiro age para aliviar sua carga — cuida da casa, resolve um problema, ajuda sem ser pedido — você sente o amor de forma profunda.",tip:"Me ajude nas tarefas sem que eu precise pedir. Quando você age por mim, eu sinto que sou prioridade e que estou sendo cuidado(a)."}
+];
+let scores=[0,0,0,0,0],current=0,selected=null;
+function renderQuestion(){
+  const q=questions[current];
+  document.getElementById("question").textContent=q.q;
+  document.getElementById("count").textContent=(current+1)+" / "+questions.length;
+  document.getElementById("prog").style.width=(((current)/questions.length)*100)+"%";
+  const opts=document.getElementById("options");
+  opts.innerHTML="";selected=null;
+  document.getElementById("next-btn").disabled=true;
+  q.a.forEach((a,i)=>{
+    const btn=document.createElement("button");
+    btn.className="option";btn.textContent=a.t;
+    btn.onclick=()=>{document.querySelectorAll(".option").forEach(b=>b.classList.remove("selected"));btn.classList.add("selected");selected=i;document.getElementById("next-btn").disabled=false;};
+    opts.appendChild(btn);
+  });
+  document.getElementById("next-btn").textContent=(current===questions.length-1)?"Ver meu resultado 💝":"Próxima →";
+}
+document.getElementById("next-btn").addEventListener("click",()=>{
+  if(selected===null)return;
+  scores[questions[current].a[selected].l]++;
+  current++;
+  if(current<questions.length){renderQuestion();}else{showResult();}
+});
+function showResult(){
+  document.getElementById("quiz-section").classList.add("result-hidden");
+  const rs=document.getElementById("result-section");rs.classList.remove("result-hidden");
+  const maxScore=Math.max(...scores),winIdx=scores.indexOf(maxScore),winner=langs[winIdx];
+  document.getElementById("r-emoji").textContent=winner.emoji;
+  document.getElementById("r-name").textContent=winner.name;
+  document.getElementById("r-desc").textContent=winner.desc;
+  document.getElementById("r-tip").textContent=winner.tip;
+  const barsEl=document.getElementById("bars");barsEl.innerHTML="";
+  const maxS=Math.max(...scores,1);
+  langs.forEach((l,i)=>{
+    const pct=Math.round((scores[i]/maxS)*100);
+    const row=document.createElement("div");row.className="bar-row";
+    row.innerHTML='<div class="bar-label">'+l.emoji+' '+l.name.split(" ").slice(-1)[0]+'</div><div class="bar-track"><div class="bar-fill" style="width:0%" data-pct="'+pct+'"></div></div><div class="bar-val">'+scores[i]+'</div>';
+    barsEl.appendChild(row);
+  });
+  setTimeout(()=>{document.querySelectorAll(".bar-fill").forEach(b=>{b.style.width=b.dataset.pct+"%";});},100);
+  const shareText=encodeURIComponent("🤍 Fiz o Quiz das 5 Linguagens do Amor e descobri que minha linguagem principal é: "+winner.name+" "+winner.emoji+"
+
+"+winner.tip+"
+
+👉 Faça o seu também: "+window.location.href);
+  document.getElementById("share-btn").onclick=()=>{window.open("https://wa.me/?text="+shareText,"_blank");};
+  document.getElementById("restart-btn").onclick=()=>{scores=[0,0,0,0,0];current=0;selected=null;rs.classList.add("result-hidden");document.getElementById("quiz-section").classList.remove("result-hidden");renderQuestion();};
+}
+renderQuestion();
+</script>
+</body>
+  </html>
