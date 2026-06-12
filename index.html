@@ -29,101 +29,39 @@ body{font-family:'Karla',sans-serif;color:var(--ink);background:linear-gradient(
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .result-name{text-align:center;color:var(--muted);font-size:.9rem;margin-bottom:4px}
 .result-lang{font-family:'Fraunces',serif;font-size:1.7rem;font-weight:700;color:var(--berry);text-align:center;line-height:1.25;margin-bottom:14px}
-.result-desc{background:var(--blush);border-radius:14px;padding:15px 17px;font-size:.92rem;line-height:1.6;margin-bottom:10px}
+.result-desc{background:var(--blush);border-radius:14px;padding:15px 17px;font-size:.92rem;line-height:1.6;margin-bottom:20px}
 .result-desc strong{color:var(--berry)}
-.tip{border:1.5px dashed var(--rose);border-radius:14px;padding:13px 17px;font-size:.88rem;line-height:1.55;margin-bottom:20px}
-.tip strong{color:var(--rose)}
 .bar-row{margin-bottom:11px}
 .bar-label{display:flex;justify-content:space-between;font-size:.82rem;font-weight:700;margin-bottom:5px}
 .bar-label span:last-child{color:var(--muted);font-weight:500}
 .bar{height:10px;background:var(--blush);border-radius:99px;overflow:hidden}
 .bar>div{height:100%;background:var(--rose);border-radius:99px;width:0%;transition:width .8s ease .15s}
 .bar.top>div{background:var(--berry)}
-.btn{display:block;width:100%;margin-top:18px;padding:14px;border:none;border-radius:14px;background:var(--berry);color:#fff;font:700 1rem 'Karla',sans-serif;cursor:pointer;transition:transform .15s,background .2s}
-.btn:hover{background:var(--deep)}
+.days-title{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700;color:var(--berry);margin:20px 0 4px;text-align:center}
+.days-sub{text-align:center;color:var(--muted);font-size:.8rem;margin-bottom:12px}
+.day-row{display:flex;align-items:flex-start;gap:10px;background:var(--blush);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.day-badge{flex:none;background:var(--berry);color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.04em;border-radius:99px;padding:4px 9px;margin-top:1px;white-space:nowrap}
+.day-text{font-size:.86rem;line-height:1.45}
+.btn{display:block;width:100%;margin-top:18px;padding:14px;border:none;border-radius:14px;background:#1faa55;color:#fff;font:700 1rem 'Karla',sans-serif;cursor:pointer;transition:transform .15s,filter .2s}
+.btn:hover{filter:brightness(.92)}
 .btn:active{transform:scale(.98)}
+.btn.secondary{background:transparent;color:var(--berry);border:1.5px solid var(--berry);margin-top:10px}
 .footer-note{text-align:center;font-size:.74rem;color:var(--muted);margin-top:14px;font-style:italic}
 </style>
 </head>
 <body>
 <main class="card" id="app"></main>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-var LANGS={
-A:{nome:"Palavras de Afirmacao",emoji:"💬",desc:"Voce se sente amado(a) atraves de palavras: elogios sinceros, encorajamento e reconhecimento.",dica:"elogie com sinceridade, agradeca pelas pequenas coisas e mande mensagens carinhosas."},
-B:{nome:"Tempo de Qualidade",emoji:"⏰",desc:"Voce se sente amado(a) com atencao total. Nao basta estar no mesmo lugar, voce precisa de presenca verdadeira.",dica:"reserve momentos sem celular, planeje passeios a dois e escute com atencao total."},
-C:{nome:"Presentes",emoji:"🎁",desc:"Voce se sente amado(a) com gestos visiveis de cuidado. Nao e o valor, e a mensagem: eu pensei em voce.",dica:"surpreenda com lembrancinhas sem motivo e lembre-se das datas especiais."},
-D:{nome:"Atos de Servico",emoji:"🤝",desc:"Para voce, amor e ajuda pratica. Quando seu conjuge assume uma tarefa ou cuida de voce num dia dificil, isso comunica amor.",dica:"ofereca ajuda sem que precise pedir e divida as tarefas nos dias mais corridos."},
-E:{nome:"Toque Fisico",emoji:"🫶",desc:"Voce se sente amado(a) com proximidade fisica: abracos, maos dadas, um carinho ao passar.",dica:"abrace ao chegar e ao sair, segure a mao e demonstre carinho fisico no dia a dia."}
-};
-var CHECKS={
-A:["Elogie algo especifico sobre ele(a) hoje","Diga eu te amo antes de sair de casa","Envie uma mensagem carinhosa no meio do dia","Agradeca por algo que ele(a) fez","Reconheca um esforco em voz alta","Deixe um bilhete escrito a mao","Evite criticas asperas, corrija com gentileza"],
-B:["Reserve 15 minutos de conversa por dia sem celular","Planeje um encontro a dois esta semana","Faca uma refeicao juntos com atencao total","Pergunte como foi o dia e escute","Facam juntos uma atividade que ele(a) gosta","Caminhem juntos","Guarde o celular quando ele(a) estiver falando"],
-C:["Surpreenda com uma lembranca sem motivo","Traga o doce favorito dele(a)","Anote as coisas que ele(a) menciona querer","Marque as datas especiais","Capriche na entrega mesmo em algo simples","Traga algo simbolico quando viajar","Faca um presente com as proprias maos"],
-D:["Assuma uma tarefa da casa sem ser pedido","Prepare o cafe para ele(a)","Resolva algo pendente ha tempos","Ajude com as criancas num dia cansativo","Cuide de um detalhe pratico","Pergunte: o que posso fazer para te ajudar?","Cumpra o que prometeu"],
-E:["Abrace ao chegar e ao sair de casa","Andem de maos dadas","Sente-se pertinho no sofa","Faca um cafune sem pressa","De um beijo de bom dia e boa noite","Toque o ombro ao passar","Adormecem abracados"]
-};
-var PERGUNTAS=[
-["A","Receber um elogio sincero do meu conjuge.","B","Ter um tempo so nosso, sem interrupcoes."],
-["C","Ganhar uma surpresinha inesperada.","D","Ver meu conjuge me ajudando sem eu pedir."],
-["E","Receber um abraco demorado ao chegar em casa.","A","Ouvir: eu tenho orgulho de voce."],
-["B","Fazer um passeio a dois, so nos.","C","Receber um presente que mostra que pensaram em mim."],
-["D","Chegar em casa e ver que meu conjuge resolveu algo por mim.","E","Andar de maos dadas."],
-["A","Receber uma mensagem carinhosa no meio do dia.","C","Encontrar uma surpresinha que meu conjuge deixou."],
-["B","Conversar profundamente sobre a vida sem pressa.","D","Ter ajuda concreta quando estou sobrecarregado(a)."],
-["E","Receber carinho enquanto assistimos algo juntos.","B","Ter a atencao total do meu conjuge, celular de lado."],
-["A","Ser encorajado(a) quando estou inseguro(a).","D","Ver meu conjuge cuidando de algo para facilitar minha vida."],
-["C","Perceber que meu conjuge guardou algo que eu mencionei querer.","E","Adormecer abracados."]
-];
-var idx=0,placar={A:0,B:0,C:0,D:0,E:0};
-var app=document.getElementById("app");
-var HEARTS='<div class="hearts"><svg viewBox="0 0 24 24" fill="#A26769"><path d="M12 21s-7.5-4.9-10-9.2C.4 8.6 2 5 5.5 5 7.7 5 9.3 6.3 12 9c2.7-2.7 4.3-4 6.5-4C22 5 23.6 8.6 22 11.8 19.5 16.1 12 21 12 21z"/></svg><svg viewBox="0 0 24 24" fill="#F1E4E6"><path d="M12 21s-7.5-4.9-10-9.2C.4 8.6 2 5 5.5 5 7.7 5 9.3 6.3 12 9c2.7-2.7 4.3-4 6.5-4C22 5 23.6 8.6 22 11.8 19.5 16.1 12 21 12 21z"/></svg></div>';
-function responder(lang){placar[lang]++;idx++;if(idx<PERGUNTAS.length)telaPergunta();else telaResultado();}
-function telaPergunta(){
-var p=PERGUNTAS[idx];var l1=p[0],t1=p[1],l2=p[2],t2=p[3];
-var pct=Math.round((idx/PERGUNTAS.length)*100);
-var ops=idx%2===1?[[l2,t2],[l1,t1]]:[[l1,t1],[l2,t2]];
-var btns=ops.map(function(o){return '<button class="opt" onclick="responder(\'' + o[0] + '\')">' + o[1] + '</button>';}).join("");
-app.innerHTML='<div class="inner fade">'+HEARTS+'<p class="eyebrow">As 5 Linguagens do Amor</p><div class="progress-wrap"><div class="progress"><div id="pbar"></div></div><span class="count">'+(idx+1)+' / '+PERGUNTAS.length+'</span></div><p class="qtitle">E mais significativo para mim...</p><p class="qsub">Toque na opcao que mais fala ao seu coracao:</p>'+btns+'</div>';
-requestAnimationFrame(function(){var b=document.getElementById("pbar");if(b)b.style.width=pct+"%";});
-}
-function telaResultado(){
-var ord=Object.entries(placar).sort(function(a,b){return b[1]-a[1];});
-var top=ord[0][0];var L=LANGS[top];
-var barras=ord.map(function(e,i){return '<div class="bar-row"><div class="bar-label"><span>'+LANGS[e[0]].emoji+' '+LANGS[e[0]].nome+'</span><span>'+e[1]+' pts</span></div><div class="bar '+(i===0?'top':'')+'"><div data-w="'+Math.round((e[1]/4)*100)+'"></div></div></div>';}).join("");
-app.innerHTML='<div class="inner fade">'+HEARTS+'<p class="eyebrow">Resultado</p><p class="result-name">Sua principal linguagem do amor e:</p><p class="result-lang">'+L.emoji+' '+L.nome+'</p><div class="result-desc">'+L.desc+'</div><div class="tip"><strong>Dica para o conjuge:</strong> '+L.dica+'</div>'+barras+'<button class="btn" onclick="gerarPDF()">Enviar para o conjuge no WhatsApp</button><button class="btn" onclick="reiniciar()" style="background:transparent;color:var(--berry);border:1.5px solid var(--berry);margin-top:10px">Refazer o quiz</button><p class="footer-note">E lhes darei um so coracao</p></div>';
-requestAnimationFrame(function(){document.querySelectorAll(".bar>div").forEach(function(d){d.style.width=Math.min(100,d.dataset.w)+"%";});});
-}
+var LANGS={A:{nome:"Palavras de Afirmacao",emoji:"💬",desc:"Voce se sente amado(a) atraves de <strong>palavras</strong>: elogios sinceros, encorajamento e reconhecimento.",descEu:"Eu me sinto amado(a) atraves de palavras: elogios sinceros, encorajamento e reconhecimento."},B:{nome:"Tempo de Qualidade",emoji:"⏰",desc:"Voce se sente amado(a) com <strong>atencao total</strong>. Nao basta estar no mesmo lugar.",descEu:"Eu me sinto amado(a) com atencao total. Preciso de presenca verdadeira: olho no olho, conversa de verdade, momentos so nossos."},C:{nome:"Presentes",emoji:"🎁",desc:"Voce se sente amado(a) com <strong>gestos visiveis de cuidado</strong>. Nao e o valor, e a mensagem: eu pensei em voce.",descEu:"Eu me sinto amado(a) com gestos visiveis de cuidado. Nao e o valor, e a mensagem: eu pensei em voce."},D:{nome:"Atos de Servico",emoji:"🤝",desc:"Para voce, <strong>amor e ajuda pratica</strong>. Quando seu conjuge assume uma tarefa, isso comunica amor.",descEu:"Para mim, amor e ajuda pratica. Quando voce assume uma tarefa ou cuida de mim num dia dificil, isso me comunica amor."},E:{nome:"Toque Fisico",emoji:"🤗",desc:"Voce se sente amado(a) com <strong>proximidade fisica</strong>: abracos, maos dadas, um carinho ao passar.",descEu:"Eu me sinto amado(a) com proximidade fisica: abracos, maos dadas, um carinho ao passar. O seu toque me comunica seguranca e amor."}};
+var CHECKS={A:["Me elogie com algo especifico hoje","Diga eu te amo antes de sair de casa","Me envie uma mensagem carinhosa no meio do dia","Agradeca por algo que eu fiz, mesmo pequeno","Reconheca um esforco ou conquista minha em voz alta","Deixe um bilhete escrito a mao em um lugar inesperado","Evite criticas asperas, me corrija sempre com gentileza"],B:["Reserve 15 minutos de conversa comigo por dia, sem celular","Planeje um encontro a dois ainda nesta semana","Faca uma refeicao comigo com atencao total","Pergunte como foi o meu dia e escute ate o fim","Faca comigo uma atividade que eu gosto","Caminhe comigo, nem que seja no quarteirao","Guarde o celular quando eu estiver falando"],C:["Me surpreenda com uma lembrancinha sem motivo","Traga o meu doce ou a minha comida favorita","Anote as coisas que eu menciono querer","Marque as nossas datas especiais no calendario","Capriche na entrega, mesmo em algo simples","Traga algo simbolico quando sair ou viajar","Faca um presente para mim com as proprias maos"],D:["Assuma uma tarefa da casa sem que eu peca","Prepare o cafe ou uma refeicao para mim","Resolva algo que esta pendente ha tempos","Me ajude com as criancas num dia cansativo","Cuide de um detalhe pratico: carro, contas, mercado","Pergunte: o que posso fazer para te ajudar hoje?","Cumpra aquilo que prometeu fazer"],E:["Me abrace ao chegar e ao sair de casa","Ande de maos dadas comigo em publico","Sente-se pertinho de mim no sofa","Faca um carinho ou cafune em mim, sem pressa","Me de um beijo de bom dia e de boa noite","Toque meu ombro ou minhas costas ao passar por mim","Vamos adormecer abracados"]};
+var PERGUNTAS=[["A","Receber um elogio sincero do meu conjuge.","B","Ter um tempo so nosso, sem interrupcoes."],["C","Ganhar uma lembrancinha inesperada.","D","Ver meu conjuge me ajudando numa tarefa sem eu pedir."],["E","Receber um abraco demorado ao chegar em casa.","A","Ouvir: eu tenho orgulho de voce."],["B","Fazer um passeio a dois, so nos.","C","Receber um presente que mostra que pensaram em mim."],["D","Chegar em casa e ver que meu conjuge resolveu algo por mim.","E","Andar de maos dadas."],["A","Receber uma mensagem carinhosa no meio do dia.","C","Encontrar uma surpresinha que meu conjuge deixou para mim."],["B","Conversar profundamente sobre a vida, sem pressa.","D","Ter ajuda concreta quando estou sobrecarregado(a)."],["E","Receber carinho enquanto assistimos algo juntos.","B","Ter a atencao total do meu conjuge, celular de lado."],["A","Ser encorajado(a) quando estou inseguro(a).","D","Ver meu conjuge cuidando de algo para facilitar minha vida."],["C","Perceber que meu conjuge guardou algo que eu mencionei querer.","E","Adormecer abracados."]];
+var idx=0,placar={A:0,B:0,C:0,D:0,E:0},app=document.getElementById("app");
+var H='<div class="hearts"><svg viewBox="0 0 24 24" fill="#A26769"><path d="M12 21s-7.5-4.9-10-9.2C.4 8.6 2 5 5.5 5 7.7 5 9.3 6.3 12 9c2.7-2.7 4.3-4 6.5-4C22 5 23.6 8.6 22 11.8 19.5 16.1 12 21 12 21z"/><\/svg><svg viewBox="0 0 24 24" fill="#F1E4E6"><path d="M12 21s-7.5-4.9-10-9.2C.4 8.6 2 5 5.5 5 7.7 5 9.3 6.3 12 9c2.7-2.7 4.3-4 6.5-4C22 5 23.6 8.6 22 11.8 19.5 16.1 12 21 12 21z"/><\/svg><\/div>';
+function responder(l){placar[l]++;idx++;if(idx<PERGUNTAS.length)telaPergunta();else telaResultado();}
+function telaPergunta(){var p=PERGUNTAS[idx],pct=Math.round((idx/PERGUNTAS.length)*100),ops=idx%2===1?[[p[2],p[3]],[p[0],p[1]]]:[[p[0],p[1]],[p[2],p[3]]];var btns=ops.map(function(o){return '<button class="opt" onclick="responder(\''+ o[0] +'\')">'+o[1]+'<\/button>';}).join("");app.innerHTML='<div class="inner fade">'+H+'<p class="eyebrow">As 5 Linguagens do Amor<\/p><div class="progress-wrap"><div class="progress"><div id="pb"><\/div><\/div><span class="count">'+(idx+1)+' \/ '+PERGUNTAS.length+'<\/span><\/div><p class="qtitle">E mais significativo para mim...<\/p><p class="qsub">Toque na opcao que mais fala ao seu coracao:<\/p>'+btns+'<\/div>';requestAnimationFrame(function(){var b=document.getElementById("pb");if(b)b.style.width=pct+"%";});}
+function telaResultado(){var ord=Object.entries(placar).sort(function(a,b){return b[1]-a[1];});var top=ord[0][0],L=LANGS[top],MAX=4;var barras=ord.map(function(e,i){return '<div class="bar-row"><div class="bar-label"><span>'+(i+1)+'o '+LANGS[e[0]].emoji+' '+LANGS[e[0]].nome+'<\/span><span>'+e[1]+' pts<\/span><\/div><div class="bar '+(i===0?'top':'')+'"><div data-w="'+Math.round((e[1]\/MAX)*100)+'"><\/div><\/div><\/div>';}).join("");var dias=CHECKS[top].map(function(item,i){return '<div class="day-row"><span class="day-badge">Dia '+(i+1)+'<\/span><span class="day-text">'+item+'<\/span><\/div>';}).join("");app.innerHTML='<div class="inner fade">'+H+'<p class="eyebrow">Resultado<\/p><p class="result-name">Sua principal linguagem do amor e:<\/p><p class="result-lang">'+L.emoji+' '+L.nome+'<\/p><div class="result-desc">'+L.desc+'<\/div>'+barras+'<p class="days-title">📅 Cronograma de 7 dias para o seu conjuge<\/p><p class="days-sub">Uma acao por dia, na sua linguagem do amor:<\/p>'+dias+'<button class="btn" onclick="enviarWhatsApp()">Enviar para meu conjuge no WhatsApp 💌<\/button><p class="footer-note">Abre o WhatsApp com mensagem pronta + cronograma de 7 dias.<\/p><button class="btn secondary" onclick="reiniciar()">Refazer o quiz 💑<\/button><p class="footer-note">E lhes darei um so coracao...<\/p><\/div>';requestAnimationFrame(function(){document.querySelectorAll(".bar > div").forEach(function(d){d.style.width=Math.min(100,d.dataset.w)+"%";});});}
 function reiniciar(){idx=0;placar={A:0,B:0,C:0,D:0,E:0};telaPergunta();}
-async function gerarPDF(){
-var btn=event.target;btn.disabled=true;btn.textContent="Gerando PDF...";
-try{
-var doc=new window.jspdf.jsPDF({unit:"mm",format:"a4"});var W=210;
-var ord=Object.entries(placar).sort(function(a,b){return b[1]-a[1];});
-var top=ord[0][0];var L=LANGS[top];
-doc.setFillColor(85,36,58);doc.rect(0,0,W,50,"F");
-doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(19);
-doc.text("Uma mensagem para voce, meu amor",W/2,30,{align:"center"});
-doc.setFont("helvetica","normal");doc.setFontSize(11);doc.setTextColor(217,195,204);
-doc.text("Quiz - As 5 Linguagens do Amor",W/2,42,{align:"center"});
-var y=64;doc.setTextColor(71,54,64);doc.setFontSize(14);doc.setFont("helvetica","bold");
-doc.text("Minha linguagem do amor: "+L.nome,W/2,y,{align:"center"});y+=12;
-doc.setFont("helvetica","normal");doc.setFontSize(11);
-var descLines=doc.splitTextToSize(L.desc,160);doc.text(descLines,W/2,y,{align:"center"});y+=descLines.length*6+10;
-doc.setFillColor(241,228,230);doc.roundedRect(20,y,170,20,4,4,"F");
-doc.setTextColor(109,46,70);doc.setFont("helvetica","bold");doc.setFontSize(11);
-doc.text("Dica: "+L.dica,W/2,y+13,{align:"center"});y+=30;
-doc.setTextColor(71,54,64);doc.setFont("helvetica","bold");doc.setFontSize(13);
-doc.text("Checklist para o meu conjuge:",20,y);y+=10;
-CHECKS[top].forEach(function(item){
-doc.setFont("helvetica","normal");doc.setFontSize(11);doc.setFillColor(255,255,255);
-doc.setDrawColor(162,103,105);doc.roundedRect(22,y-4,6,6,1,1,"FD");
-doc.text(item,34,y);y+=10;
-});
-doc.save("linguagem-do-amor.pdf");
-}catch(e){console.error(e);}
-finally{btn.disabled=false;btn.textContent="Enviar para o conjuge no WhatsApp";}
-}
+function enviarWhatsApp(){var ord=Object.entries(placar).sort(function(a,b){return b[1]-a[1];});var top=ord[0][0],L=LANGS[top];var itens=CHECKS[top].map(function(item,i){return "◻️ *Dia "+(i+1)+":* "+item;}).join("\n");var ranking=ord.map(function(e,i){return (i+1)+"o "+LANGS[e[0]].emoji+" "+LANGS[e[0]].nome+" - "+e[1]+" pts";}).join("\n");var msg="💌 *Uma mensagem para voce, meu amor*\n\nAcabei de fazer o quiz das 5 Linguagens do Amor.\n\n"+L.emoji+" *A minha linguagem do amor e: "+L.nome+"*\n\n"+L.descEu+"\n\n📊 *Como pontuei:*\n"+ranking+"\n\n📅 *Cronograma de 7 dias:*\n"+itens+"\n\n💍 *Combinado:* a cada dia cumprido, me mande um ✅. No 7o dia, me conte qual acao voce mais gostou!\n\n\"E lhes darei um so coracao...\"\n*2 Coracoes, 1 So Proposito*";window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");}
 telaPergunta();
 </script>
 </body>
